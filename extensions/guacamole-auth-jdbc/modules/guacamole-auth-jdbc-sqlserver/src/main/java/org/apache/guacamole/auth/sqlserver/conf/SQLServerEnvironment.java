@@ -63,7 +63,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      * The default value for the default maximum number of connections to be
      * allowed per user to any one connection.
      */
-    private static final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
+    private static final int DEFAULT_MAX_CONNECTIONS_PER_USER = 0;
 
     /**
      * The default value for the default maximum number of connections to be
@@ -88,6 +88,19 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      */
     public static final SQLServerDriver SQLSERVER_DEFAULT_DRIVER = SQLServerDriver.MICROSOFT_2005;
 
+    /**
+     * The default maximum number of identifiers/parameters to be included in a
+     * single batch when executing SQL statements for SQL Server.
+     *
+     * SQL Server supports a maximum of 2100 parameters per query. A value of
+     * 500 is chosen to stay within this limit and avoid query execution errors,
+     * as some queries involve multiple parameters per item - namely retrieval
+     * of connections.
+     *
+     * @see https://docs.microsoft.com/en-us/sql/sql-server/maximum-capacity-specifications-for-sql-server
+     */
+    private static final int DEFAULT_BATCH_SIZE = 500;
+    
     /**
      * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
      * configuration options.
@@ -117,6 +130,13 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             DEFAULT_ABSOLUTE_MAX_CONNECTIONS
         );
     }
+    
+    @Override
+    public int getBatchSize() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_BATCH_SIZE,
+            DEFAULT_BATCH_SIZE
+        );
+    }    
 
     @Override
     public int getDefaultMaxConnections() throws GuacamoleException {

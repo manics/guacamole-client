@@ -88,17 +88,10 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getProtocol = function getProtocol(tunnel) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
-        // Retrieve the protocol details of the specified tunnel
-        return requestService({
+        return authenticationService.request({
             method  : 'GET',
             url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                        + '/protocol',
-            params  : httpParameters
+                        + '/protocol'
         });
 
     };
@@ -323,7 +316,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
 
             // Parse and reject with resulting JSON error
             else if (xhr.getResponseHeader('Content-Type') === 'application/json')
-                deferred.reject(angular.fromJson(xhr.responseText));
+                deferred.reject(new Error(angular.fromJson(xhr.responseText)));
 
             // Warn of lack of permission of a proxy rejects the upload
             else if (xhr.status >= 400 && xhr.status < 500)
